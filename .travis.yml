@@ -34,7 +34,8 @@ jobs:
           | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
     - stage: pack default theme
       script:
-        - travis_wait docker-compose run test-ci npm run compile:prod && sudo chown -R travis:travis /opt/module/build
+        - travis_wait docker-compose run --volume $TRAVIS_BUILD_DIR/build:/opt/module/build
+test-ci npm run compile:prod
     - stage: danger lint and jest
       script:
         - "travis_wait docker-compose run -e DANGER_GITHUB_API_TOKEN=$DANGER_GITHUB_API_TOKEN -e TRAVIS=$TRAVIS -e CI=$CI -e HAS_JOSH_K_SEAL_OF_APPROVAL=$HAS_JOSH_K_SEAL_OF_APPROVAL -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST -e TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG test-ci bash -c 'npm run danger && npm run lint && npm run jest'"
@@ -92,8 +93,8 @@ jobs:
         - 'rm -f $HOME/docker/*.tar.gz'
 stages:
   - build
-  - danger lint and jest
   - pack default theme
+  - danger lint and jest
   - wdio - default theme
   - pack fusion theme
   - wdio - fusion theme
