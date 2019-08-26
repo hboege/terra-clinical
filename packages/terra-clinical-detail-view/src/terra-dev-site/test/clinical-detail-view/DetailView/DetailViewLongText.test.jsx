@@ -7,12 +7,13 @@ const item = (<p>{longText}</p>);
 const item2 = (<p>A Detail List Item to prove float concept when screen readjusts smaller.</p>);
 const accessoryElement = (<p>{longText}</p>);
 
+/* eslint-disable react/forbid-dom-props */
 const DetailViewLongText = () => (
   <DetailView
     title={longText}
     secondaryTitles={[longText, longText]}
     subtitles={[longText, longText]}
-    graph={
+    graph={(
       <div
         style={{
           border: '1px solid black', height: '20em', width: '25em', marginBottom: '0.714rem',
@@ -20,7 +21,7 @@ const DetailViewLongText = () => (
       >
       This is where any visualizations would go
       </div>
-    }
+    )}
     accessory={accessoryElement}
     details={[
       (
