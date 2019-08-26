@@ -51,3 +51,6 @@ services:
       - build:/opt/module/build
     depends_on:
       - standalone-chrome
+
+    volumes:
+      build:
