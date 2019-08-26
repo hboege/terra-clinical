@@ -32,12 +32,12 @@ jobs:
         - >
           mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
           | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
+    - stage: pack default theme
+      script:
+        - travis_wait docker-compose run test-ci npm run compile:prod && sudo chown -R travis:travis /opt/module/build
     - stage: danger lint and jest
       script:
         - "travis_wait docker-compose run -e DANGER_GITHUB_API_TOKEN=$DANGER_GITHUB_API_TOKEN -e TRAVIS=$TRAVIS -e CI=$CI -e HAS_JOSH_K_SEAL_OF_APPROVAL=$HAS_JOSH_K_SEAL_OF_APPROVAL -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST -e TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG test-ci bash -c 'npm run danger && npm run lint && npm run jest'"
-    - stage: pack default theme
-      script:
-        - travis_wait docker-compose run test-ci npm run compile:prod && sudo chown -R travis:travis $TRAVIS_WORKING_DIR/opt/module
     - stage: wdio - default theme
       script:
         - travis_wait docker-compose run test-ci npm run wdio -- --formFactors ['tiny']
@@ -55,7 +55,7 @@ jobs:
         - travis_wait docker-compose run test-ci npm run wdio -- --formFactors ['enormous']
     - stage: pack fusion theme
       script:
-        - travis_wait docker-compose run test-ci-fusion npm run compile:fusion && sudo chown -R travis:travis $TRAVIS_WORKING_DIR/opt/module
+        - travis_wait docker-compose run test-ci-fusion npm run compile:fusion && sudo chown -R travis:travis /opt/module/build
     - stage: wdio - fusion theme
       script:
         - travis_wait docker-compose run test-ci-fusion npm run wdio-fusion -- --formFactors ['tiny']
