@@ -35,7 +35,6 @@ services:
     image: "${DOCKER_IMAGE}-test-standalone-chrome:${TAG:-latest}"
     environment:
       - CI=true
-      - SITE=build
     depends_on:
       - standalone-chrome
 
