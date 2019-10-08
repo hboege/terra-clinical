@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///node_modules/terra-dev-site/lib/wrappers/ScreenshotWrapper.module.scss"],"names":[],"mappings":"AAAA,yCAII,+BAAgC,CAJpC,+CAEI,4BAA6B,CAC7B,gBACgC","file":"120-cb3f39ada62bc19f4fc1.css","sourcesContent":[":local {\n  .image {\n    border: 0.07143rem solid #000;\n    margin: 0.7143rem;\n    max-width: calc(100% - 1.429rem);\n  }\n}\n"]}
