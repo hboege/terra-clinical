@@ -74,9 +74,15 @@ const propTypes = {
    */
   hasSelectableRows: PropTypes.bool,
   /**
-   * Function that will be called when a row is selected. Parameters: `onRowSelect(sectionId, rowId)`
+   * Function that will be called when a row is selected via checkbox column. Parameters: `onRowSelect(sectionId, rowId)`
+   * This is only called if hasSelectableRows is true.
    */
   onRowSelect: PropTypes.func,
+  /**
+   * Function that will be called when a row is selected. Parameters: `onWholeRowSelect(sectionId, rowId)`
+   * This should NOT be used with hasSelectableRows.  This control has been designed to be either whole row selection or checkboxes.
+   */
+  onWholeRowSelect: PropTypes.func,
   /**
    * Boolean indicating whether or not resizable columns are enabled for the DataGrid. If this prop is not enabled, the isResizable value of columns
    * will be ignored.
@@ -922,7 +928,7 @@ class DataGrid extends React.Component {
   }
 
   renderRow(row, section, columns, width, isPinned, isStriped) {
-    const { id } = this.props;
+    const { id, onWholeRowSelect } = this.props;
     const height = row.height || this.props.rowHeight;
 
     /**
@@ -938,6 +944,25 @@ class DataGrid extends React.Component {
       ariaStyles.id = `${id}-Overflow-Row-${row.id}-Section-${section.id}`;
     }
 
+    const onHoverStartFunction = onWholeRowSelect ? () => {
+      /**
+       * Because the pinned and overflow rows are two separate elements, we need to retrieve them and add the appropriate hover styles
+       * to both to ensure a consistent row styling.
+       */
+      const rowElements = this.dataGridContainerRef.querySelectorAll(`[data-row][data-row-id="${row.id}"][data-section-id="${section.id}"]`);
+      for (let i = 0, numberOfRows = rowElements.length; i < numberOfRows; i += 1) {
+        rowElements[i].classList.add(cxRow('hover'));
+      }
+    } : undefined
+        
+    const onHoverEndFunction = onWholeRowSelect ? () => {
+      console.log("In the hover end function" + row.id);
+      const rowElements = this.dataGridContainerRef.querySelectorAll(`[data-row][data-row-id="${row.id}"][data-section-id="${section.id}"]`);
+      for (let i = 0, numberOfRows = rowElements.length; i < numberOfRows; i += 1) {
+        rowElements[i].classList.remove(cxRow('hover'));
+      }
+    } : undefined
+
     return (
       <Row
         key={`${section.id}-${row.id}`}
@@ -945,10 +970,13 @@ class DataGrid extends React.Component {
         rowId={row.id}
         width={width}
         height={height}
+        isSelectable={(row.isSelectable && onWholeRowSelect)}
         isSelected={row.isSelected}
         isStriped={isStriped}
         {...ariaStyles}
-
+        onSelect={onWholeRowSelect}
+        onHoverStart={onHoverStartFunction}
+        onHoverEnd={onHoverEndFunction}
       >
         {columns.map((column) => {
           if (column.id === 'DataGrid-rowSelectionColumn') {
@@ -1047,6 +1075,7 @@ class DataGrid extends React.Component {
       headerHeight,
       hasSelectableRows,
       onRowSelect,
+      onWholeRowSelect,
       hasResizableColumns,
       defaultColumnWidth,
       fill,
